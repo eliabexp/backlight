@@ -43,16 +43,16 @@ document.addEventListener('keydown', (e) => {
     const key = e.key;
 
     if (key === '=' || key === 'ArrowUp') {
-        changeBrightness(getProperties().brightness + 0.1);
+        changeProperties({ temperature: getProperties().brightness + 0.1 });        
     }
     else if (key === '-' || key === 'ArrowDown') {
-        changeBrightness(getProperties().brightness - 0.1);
+        changeProperties({ temperature: getProperties().brightness - 0.1 });
     }
     else if (key === 'ArrowRight') {
-        changeTemperature(getProperties().temperature + 0.1);
+        changeProperties({ temperature: getProperties().temperature + 0.1 });
     }
     else if (key === 'ArrowLeft') {
-        changeTemperature(getProperties().temperature - 0.1);
+        changeProperties({ temperature: getProperties().temperature - 0.1 });
     }
 })
 
