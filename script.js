@@ -73,10 +73,10 @@ function detectSwipe() {
     let diffY = endY - startY;
 
     if (Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX < -50) changeTemperature(getProperties().temperature - 0.1);
-        if (diffX > 50) changeTemperature(getProperties().temperature + 0.1);
+        if (diffX > 50) changeProperties({ temperature: getProperties().brightness + 0.1 });
+        if (diffX < -50) changeProperties({ temperature: getProperties().brightness - 0.1 });
     } else {
-        if (diffY < -50) changeBrightness(getProperties().brightness + 0.1);
-        if (diffY > 50) changeBrightness(getProperties().brightness - 0.1);
+        if (diffY < -50) changeProperties({ temperature: getProperties().temperature + 0.1 });
+        if (diffY > 50) changeProperties({ temperature: getProperties().temperature - 0.1 });
     }
 }
