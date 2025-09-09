@@ -13,7 +13,9 @@ function changeProperties(properties) {
     changeBrightness(properties.brightness);
     changeTemperature(properties.temperature);
 
-    localStorage.setItem('properties', JSON.stringify(properties));
+    const newProperties = { ...getProperties(), ...properties };
+
+    localStorage.setItem('properties', JSON.stringify(newProperties));
 }
 
 function getProperties() {
@@ -32,7 +34,10 @@ function toggleFullscreen() {
 }
 
 // Load
-localStorage.getItem('properties') && changeProperties(JSON.parse(localStorage.getItem('properties')));
+document.addEventListener("DOMContentLoaded", () => {
+    const properties = JSON.parse(localStorage.getItem('properties'));
+    if (properties) changeProperties(properties);
+});
 
 // Triggers
 document.addEventListener('dblclick', (e) => {
@@ -43,10 +48,10 @@ document.addEventListener('keydown', (e) => {
     const key = e.key;
 
     if (key === '=' || key === 'ArrowUp') {
-        changeProperties({ temperature: getProperties().brightness + 0.1 });        
+        changeProperties({ brightness: getProperties().brightness + 0.1 });        
     }
     else if (key === '-' || key === 'ArrowDown') {
-        changeProperties({ temperature: getProperties().brightness - 0.1 });
+        changeProperties({ brightness: getProperties().brightness - 0.1 });
     }
     else if (key === 'ArrowRight') {
         changeProperties({ temperature: getProperties().temperature + 0.1 });
@@ -73,10 +78,10 @@ function detectSwipe() {
     let diffY = endY - startY;
 
     if (Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 50) changeProperties({ temperature: getProperties().brightness + 0.1 });
-        if (diffX < -50) changeProperties({ temperature: getProperties().brightness - 0.1 });
+        if (diffX > 50) changeProperties({ temperature: getProperties().temperature + 0.1 });
+        if (diffX < -50) changeProperties({ temperature: getProperties().temperature - 0.1 });
     } else {
-        if (diffY < -50) changeProperties({ temperature: getProperties().temperature + 0.1 });
-        if (diffY > 50) changeProperties({ temperature: getProperties().temperature - 0.1 });
+        if (diffY < -50) changeProperties({ brightness: getProperties().brightness + 0.1 });
+        if (diffY > 50) changeProperties({ brightness: getProperties().brightness - 0.1 });
     }
 }

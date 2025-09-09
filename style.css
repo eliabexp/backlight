@@ -1,6 +1,6 @@
 :root {
     --brightness: 1;
-    --temperature: 1;
+    --temperature: 0;
 }
 
 * {
