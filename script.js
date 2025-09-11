@@ -8,7 +8,9 @@ let isAnimatingTexts = false;
 let textAnimationTimeout;
 
 function changeBrightness(level) {
-    if (isNaN(level) || level < 0 || level > 1) return;
+    if (isNaN(level)) return;
+    else if (level > 1) level = 1;
+    else if (level < 0) level = 0;
 
     document.documentElement.style.setProperty('--brightness', level);
 }
@@ -18,7 +20,9 @@ function changeColor(color) {
     document.documentElement.style.setProperty('--overlay-color', color);
 }
 function changeTemperature(level) {
-    if (isNaN(level) || level < 0 || level > 1) return;
+    if (isNaN(level)) return;
+    else if (level > 1) level = 1;
+    else if (level < 0) level = 0;
 
     document.documentElement.style.setProperty('--temperature', level);
 }
@@ -150,20 +154,24 @@ document.addEventListener('keydown', (e) => {
         // Brightness
         case '=':
         case 'ArrowUp':
-            increase('brightness', 0.1);
+            if (e.ctrlKey) increase('brightness', 0.5);
+            else increase('brightness', 0.1);
             break;
 
         case '-':
         case 'ArrowDown':
+            if (e.ctrlKey) increase('brightness', -0.5);
             increase('brightness', -0.1);
             break;
 
         // Temperature
         case 'ArrowRight':
+            if (e.ctrlKey) increase('temperature', 0.5);
             increase('temperature', 0.1);
             break;
 
         case 'ArrowLeft':
+            if (e.ctrlKey) increase('temperature', -0.5);
             increase('temperature', -0.1);
             break;
     }
