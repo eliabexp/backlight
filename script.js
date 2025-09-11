@@ -1,13 +1,24 @@
-let isAnimating = false;
-let animationTimeout;
+const defaultOptions = {
+    brightness: 1,
+    temperature: 0
+};
+
+const colorPicker = document.getElementById('select-color');
+let isAnimatingTexts = false;
+let textAnimationTimeout;
 
 function changeBrightness(level) {
-    if (!level || level < 0 || level > 1) return;
+    if (isNaN(level) || level < 0 || level > 1) return;
 
     document.documentElement.style.setProperty('--brightness', level);
 }
+function changeColor(color) {
+    if (!color) return;
+
+    document.documentElement.style.setProperty('--overlay-color', color);
+}
 function changeTemperature(level) {
-    if (!level || level < 0 || level > 1) return;
+    if (isNaN(level) || level < 0 || level > 1) return;
 
     document.documentElement.style.setProperty('--temperature', level);
 }
@@ -16,9 +27,10 @@ function setOptions(options) {
     showHints();
 
     changeBrightness(options.brightness);
+    changeColor(options.color);
     changeTemperature(options.temperature);
 
-    const newOptions = { ...getOptions(), ...options };
+    const newOptions = getOptions();
 
     localStorage.setItem('options', JSON.stringify(newOptions));
 }
@@ -31,10 +43,19 @@ function getOptions() {
         document.documentElement
     ).getPropertyValue('--temperature');
 
+    // Color property is not retrieved because it's not being changed programmatically
+    // and can be fetched directly from the color picker input when needed
     return {
         brightness: parseFloat(brightness),
-        temperature: parseFloat(temperature),
+        temperature: parseFloat(temperature)
     };
+}
+
+// Increase / decrease
+function increase(option, step) {
+    setOptions({
+        [option]: Number((getOptions()[option] + step).toFixed(2))
+    });
 }
 
 function toggleFullscreen() {
@@ -42,38 +63,39 @@ function toggleFullscreen() {
     else document.documentElement.requestFullscreen();
 }
 
-function showHints(duration = 3000) {
+function showHints(duration) {
     const title = document.querySelector('.title');
     const instructions = document.querySelector('.instructions');
 
     const initial = (from) => ({
         opacity: 0,
-        transform: `translateY(${from === 'top' ? '-60px' : '60px'})`,
+        transform: `translateY(${from === 'top' ? '-60px' : '60px'})`
     });
     const animate = {
         opacity: 1,
-        transform: 'translateY(0px)',
+        transform: 'translateY(0px)'
     };
 
-    if (!isAnimating) {
-        isAnimating = true;
+    if (!isAnimatingTexts) {
+        isAnimatingTexts = true;
 
         title.animate([initial('top'), animate], {
             duration: 300,
             easing: 'ease-in-out',
-            fill: 'forwards',
+            fill: 'forwards'
         });
         instructions.animate([initial(), animate], {
             duration: 300,
             easing: 'ease-in-out',
-            fill: 'forwards',
+            fill: 'forwards'
         });
-    }
-    else {
-        clearTimeout(animationTimeout);
+    } else {
+        clearTimeout(textAnimationTimeout);
     }
 
-    animationTimeout = setTimeout(() => {
+    if (!duration) return;
+
+    textAnimationTimeout = setTimeout(() => {
         title.animate([animate, initial('top')], {
             duration: 300,
             easing: 'ease-in-out',
@@ -85,16 +107,27 @@ function showHints(duration = 3000) {
             fill: 'forwards'
         });
 
-        isAnimating = false;
+        isAnimatingTexts = false;
     }, duration);
 }
 
-// Load
+// Events
 document.addEventListener('DOMContentLoaded', () => {
     const options = JSON.parse(localStorage.getItem('options'));
     if (options) setOptions(options);
 
     showHints(5000);
+});
+document.documentElement.addEventListener('mousemove', () => {
+    showHints(3000);
+});
+
+colorPicker.addEventListener('input', (e) => {
+    const color = e.target.value;
+
+    console.log('changing color', color);
+
+    setOptions({ color, temperature: 1 });
 });
 
 // Triggers
@@ -105,14 +138,34 @@ document.addEventListener('dblclick', (e) => {
 document.addEventListener('keydown', (e) => {
     const key = e.key;
 
-    if (key === '=' || key === 'ArrowUp') {
-        setOptions({ brightness: getOptions().brightness + 0.1 });
-    } else if (key === '-' || key === 'ArrowDown') {
-        setOptions({ brightness: getOptions().brightness - 0.1 });
-    } else if (key === 'ArrowRight') {
-        setOptions({ temperature: getOptions().temperature + 0.1 });
-    } else if (key === 'ArrowLeft') {
-        setOptions({ temperature: getOptions().temperature - 0.1 });
+    switch (key) {
+        case 'f':
+            toggleFullscreen();
+            break;
+
+        case 'r':
+            setOptions(defaultOptions);
+            break;
+
+        // Brightness
+        case '=':
+        case 'ArrowUp':
+            increase('brightness', 0.1);
+            break;
+
+        case '-':
+        case 'ArrowDown':
+            increase('brightness', -0.1);
+            break;
+
+        // Temperature
+        case 'ArrowRight':
+            increase('temperature', 0.1);
+            break;
+
+        case 'ArrowLeft':
+            increase('temperature', -0.1);
+            break;
     }
 });
 
@@ -133,14 +186,10 @@ function detectSwipe() {
     let diffY = endY - startY;
 
     if (Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 50)
-            setOptions({ temperature: getOptions().temperature + 0.1 });
-        if (diffX < -50)
-            setOptions({ temperature: getOptions().temperature - 0.1 });
+        if (diffX > 50) increase('temperature', 0.1);
+        if (diffX < -50) increase('temperature', -0.1);
     } else {
-        if (diffY < -50)
-            setOptions({ brightness: getOptions().brightness + 0.1 });
-        if (diffY > 50)
-            setOptions({ brightness: getOptions().brightness - 0.1 });
+        if (diffY > 50) increase('brightness', 0.1);
+        if (diffY < -50) increase('brightness', -0.1);
     }
 }

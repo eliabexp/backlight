@@ -4,7 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="style.css" />
-        <script src="./script.js"></script>
+        <script defer src="./script.js"></script>
+        <script defer src="./i18n.js"></script>
         <title>Backlight</title>
     </head>
     <body>
@@ -15,17 +16,20 @@
                     <img src="./logo.svg" alt="ícone de sol" />backlight
                 </h1>
                 <div class="instructions">
-                    <p>
+                    <noscript>Enable javascript to use controls</noscript>
+                    <noscript>
+                        Habilite o javascript para usar os controles
+                    </noscript>
+                    <p data-i18n="controls">
                         Use <kbd>↑ ↓</kbd> to change brightness
                         <br />
                         Use <kbd>← →</kbd> to change temperature
                     </p>
-                    <p>
-                        Use <kbd>↑ ↓</kbd> para alterar o brilho
-                        <br />
-                        Use <kbd>← →</kbd> para alterar a temperatura
-                    </p>
+                    <label data-i18n="change-color" for="select-color">Change color</label>
                 </div>
+            </div>
+            <div>
+                <input type="color" name="select-color" id="select-color" />
             </div>
         </main>
     </body>
