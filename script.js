@@ -9,16 +9,16 @@ function changeTemperature(level) {
     document.documentElement.style.setProperty('--temperature', level);
 }
 
-function changeProperties(properties) {
-    changeBrightness(properties.brightness);
-    changeTemperature(properties.temperature);
+function setOptions(options) {
+    changeBrightness(options.brightness);
+    changeTemperature(options.temperature);
 
-    const newProperties = { ...getProperties(), ...properties };
+    const newOptions = { ...getOptions(), ...options };
 
-    localStorage.setItem('properties', JSON.stringify(newProperties));
+    localStorage.setItem('options', JSON.stringify(newOptions));
 }
 
-function getProperties() {
+function getOptions() {
     const brightness = getComputedStyle(document.documentElement).getPropertyValue('--brightness');
     const temperature = getComputedStyle(document.documentElement).getPropertyValue('--temperature');
 
@@ -35,8 +35,8 @@ function toggleFullscreen() {
 
 // Load
 document.addEventListener("DOMContentLoaded", () => {
-    const properties = JSON.parse(localStorage.getItem('properties'));
-    if (properties) changeProperties(properties);
+    const options = JSON.parse(localStorage.getItem('options'));
+    if (options) setOptions(options);
 });
 
 // Triggers
@@ -48,16 +48,16 @@ document.addEventListener('keydown', (e) => {
     const key = e.key;
 
     if (key === '=' || key === 'ArrowUp') {
-        changeProperties({ brightness: getProperties().brightness + 0.1 });        
+        setOptions({ brightness: getOptions().brightness + 0.1 });        
     }
     else if (key === '-' || key === 'ArrowDown') {
-        changeProperties({ brightness: getProperties().brightness - 0.1 });
+        setOptions({ brightness: getOptions().brightness - 0.1 });
     }
     else if (key === 'ArrowRight') {
-        changeProperties({ temperature: getProperties().temperature + 0.1 });
+        setOptions({ temperature: getOptions().temperature + 0.1 });
     }
     else if (key === 'ArrowLeft') {
-        changeProperties({ temperature: getProperties().temperature - 0.1 });
+        setOptions({ temperature: getOptions().temperature - 0.1 });
     }
 })
 
@@ -78,10 +78,10 @@ function detectSwipe() {
     let diffY = endY - startY;
 
     if (Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 50) changeProperties({ temperature: getProperties().temperature + 0.1 });
-        if (diffX < -50) changeProperties({ temperature: getProperties().temperature - 0.1 });
+        if (diffX > 50) setOptions({ temperature: getOptions().temperature + 0.1 });
+        if (diffX < -50) setOptions({ temperature: getOptions().temperature - 0.1 });
     } else {
-        if (diffY < -50) changeProperties({ brightness: getProperties().brightness + 0.1 });
-        if (diffY > 50) changeProperties({ brightness: getProperties().brightness - 0.1 });
+        if (diffY < -50) setOptions({ brightness: getOptions().brightness + 0.1 });
+        if (diffY > 50) setOptions({ brightness: getOptions().brightness - 0.1 });
     }
 }
