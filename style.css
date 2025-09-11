@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
+
 :root {
     --brightness: 1;
     --overlay-color: rgb(255, 140, 0);
@@ -13,6 +15,7 @@
 
 body {
     background-color: #000;
+    font-family: 'Inconsolata', monospace;
 }
 
 .light {
@@ -45,7 +48,6 @@ main {
     align-items: center;
     color: rgba(28, 28, 28, 0.5);
     display: flex;
-    font-family: 'Roboto Mono', monospace;
     font-weight: bold;
     height: 100vh;
     justify-content: center;
