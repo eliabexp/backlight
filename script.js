@@ -154,24 +154,24 @@ document.addEventListener('keydown', (e) => {
         // Brightness
         case '=':
         case 'ArrowUp':
-            if (e.ctrlKey) increase('brightness', 0.5);
+            if (e.ctrlKey) increase('brightness', 1);
             else increase('brightness', 0.1);
             break;
 
         case '-':
         case 'ArrowDown':
-            if (e.ctrlKey) increase('brightness', -0.5);
+            if (e.ctrlKey) increase('brightness', -1);
             increase('brightness', -0.1);
             break;
 
         // Temperature
         case 'ArrowRight':
-            if (e.ctrlKey) increase('temperature', 0.5);
+            if (e.ctrlKey) increase('temperature', 1);
             increase('temperature', 0.1);
             break;
 
         case 'ArrowLeft':
-            if (e.ctrlKey) increase('temperature', -0.5);
+            if (e.ctrlKey) increase('temperature', -1);
             increase('temperature', -0.1);
             break;
     }
