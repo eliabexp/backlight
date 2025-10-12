@@ -117,8 +117,15 @@ function showHints(duration) {
 
 // Events
 document.addEventListener('DOMContentLoaded', () => {
+    // Load options
     const options = JSON.parse(localStorage.getItem('options'));
     if (options) setOptions(options);
+
+    // Prevent screen dimming
+    navigator.wakeLock.request("screen")
+        .catch((err) => 
+            console.error(`It wasn't possible to prevent screen dimming: ${err.name}`)
+        );
 
     showHints(5000);
 });
