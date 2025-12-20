@@ -2,7 +2,7 @@
 
 :root {
     --brightness: 1;
-    --duration: 750ms;
+    --duration: 500ms;
     --background-color: #fff;
     --foreground-color: rgba(28, 28, 28, 0.5);
     --overlay-color: rgb(255, 140, 10);
