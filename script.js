@@ -1,38 +1,13 @@
-const defaultOptions = {
-    brightness: 1,
-    temperature: 0
-};
+const display = new Display();
 
 const colorPicker = document.getElementById('select-color');
-let isAnimatingTexts = false;
-let textAnimationTimeout;
-
-function changeBrightness(level) {
-    if (isNaN(level)) return;
-    else if (level > 1) level = 1;
-    else if (level < 0) level = 0;
-
-    document.documentElement.style.setProperty('--brightness', level);
-}
-function changeColor(color) {
-    if (!color) return;
-
-    document.documentElement.style.setProperty('--overlay-color', color);
-}
-function changeTemperature(level) {
-    if (isNaN(level)) return;
-    else if (level > 1) level = 1;
-    else if (level < 0) level = 0;
-
-    document.documentElement.style.setProperty('--temperature', level);
-}
 
 function setOptions(options) {
     showHints();
 
-    changeBrightness(options.brightness);
-    changeColor(options.color);
-    changeTemperature(options.temperature);
+    display.setBrightness(options.brightness);
+    display.setColor(options.color);
+    display.setTemperature(options.temperature);
 
     const newOptions = getOptions();
 
@@ -66,6 +41,10 @@ function toggleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen();
 }
+
+// Hints
+let isAnimatingTexts = false;
+let textAnimationTimeout;
 
 function showHints(duration) {
     const title = document.querySelector('.title');
@@ -122,9 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (options) setOptions(options);
 
     // Prevent screen dimming
-    navigator.wakeLock.request("screen")
-        .catch((err) => 
-            console.error(`It wasn't possible to prevent screen dimming: ${err.name}`)
+    navigator.wakeLock
+        .request('screen')
+        .catch((err) =>
+            console.error(
+                `It wasn't possible to prevent screen dimming: ${err.name}`
+            )
         );
 
     showHints(5000);
@@ -135,8 +117,6 @@ document.documentElement.addEventListener('mousemove', () => {
 
 colorPicker.addEventListener('input', (e) => {
     const color = e.target.value;
-
-    console.log('changing color', color);
 
     setOptions({ color, temperature: 1 });
 });
@@ -155,7 +135,7 @@ document.addEventListener('keydown', (e) => {
             break;
 
         case 'r':
-            setOptions(defaultOptions);
+            display.reset();
             break;
 
         // Brightness
