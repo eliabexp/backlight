@@ -4,7 +4,7 @@ const defaultOptions = {
     temperature: 0
 };
 
-class Display {
+export class Display {
     constructor() {
         this.brightness = defaultOptions.brightness;
         this.color = defaultOptions.color;
