@@ -1,9 +1,13 @@
+import { Display } from './display.js';
+import { Hints } from './hints.js';
+
 const display = new Display();
+const hints = new Hints();
 
 const colorPicker = document.getElementById('select-color');
 
 function setOptions(options) {
-    showHints();
+    hints.show();
 
     display.setBrightness(options.brightness);
     display.setColor(options.color);
@@ -30,68 +34,14 @@ function getOptions() {
     };
 }
 
-// Increase / decrease
-function increase(option, step) {
-    setOptions({
-        [option]: Number((getOptions()[option] + step).toFixed(2))
-    });
+// Round float to 2 decimal places
+function sum(initialValue, step) {
+    return Number((initialValue + step).toFixed(2));
 }
 
 function toggleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen();
-}
-
-// Hints
-let isAnimatingTexts = false;
-let textAnimationTimeout;
-
-function showHints(duration) {
-    const title = document.querySelector('.title');
-    const instructions = document.querySelector('.instructions');
-
-    const initial = (from) => ({
-        opacity: 0,
-        transform: `translateY(${from === 'top' ? '-60px' : '60px'})`
-    });
-    const animate = {
-        opacity: 1,
-        transform: 'translateY(0px)'
-    };
-
-    if (!isAnimatingTexts) {
-        isAnimatingTexts = true;
-
-        title.animate([initial('top'), animate], {
-            duration: 300,
-            easing: 'ease-in-out',
-            fill: 'forwards'
-        });
-        instructions.animate([initial(), animate], {
-            duration: 300,
-            easing: 'ease-in-out',
-            fill: 'forwards'
-        });
-    } else {
-        clearTimeout(textAnimationTimeout);
-    }
-
-    if (!duration) return;
-
-    textAnimationTimeout = setTimeout(() => {
-        title.animate([animate, initial('top')], {
-            duration: 300,
-            easing: 'ease-in-out',
-            fill: 'forwards'
-        });
-        instructions.animate([animate, initial()], {
-            duration: 300,
-            easing: 'ease-in-out',
-            fill: 'forwards'
-        });
-
-        isAnimatingTexts = false;
-    }, duration);
 }
 
 // Events
@@ -109,10 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
             )
         );
 
-    showHints(5000);
+    hints.show(5000);
 });
 document.documentElement.addEventListener('mousemove', () => {
-    showHints(3000);
+    hints.show(3000);
 });
 
 colorPicker.addEventListener('input', (e) => {
@@ -128,6 +78,9 @@ document.addEventListener('dblclick', (e) => {
 
 document.addEventListener('keydown', (e) => {
     const key = e.key;
+    const options = getOptions();
+
+    const changeValue = e.ctrlKey ? 1 : 0.1;
 
     switch (key) {
         case 'f':
@@ -141,25 +94,21 @@ document.addEventListener('keydown', (e) => {
         // Brightness
         case '=':
         case 'ArrowUp':
-            if (e.ctrlKey) increase('brightness', 1);
-            else increase('brightness', 0.1);
+            setOptions({ brightness: sum(options.brightness, changeValue) });
             break;
 
         case '-':
         case 'ArrowDown':
-            if (e.ctrlKey) increase('brightness', -1);
-            increase('brightness', -0.1);
+            setOptions({ brightness: sum(options.brightness, -changeValue) });
             break;
 
         // Temperature
         case 'ArrowRight':
-            if (e.ctrlKey) increase('temperature', 1);
-            increase('temperature', 0.1);
+            setOptions({ temperature: sum(options.temperature, changeValue) });
             break;
 
         case 'ArrowLeft':
-            if (e.ctrlKey) increase('temperature', -1);
-            increase('temperature', -0.1);
+            setOptions({ temperature: sum(options.temperature, -changeValue) });
             break;
     }
 });
@@ -180,11 +129,12 @@ function detectSwipe() {
     let diffX = endX - startX;
     let diffY = endY - startY;
 
+    // Determine if horizontal or vertical swipe
     if (Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 50) increase('temperature', 0.1);
-        if (diffX < -50) increase('temperature', -0.1);
+        if (diffX > 50) sum(getOptions().temperature, 0.1);
+        if (diffX < -50) sum(getOptions().temperature, -0.1);
     } else {
-        if (diffY > 50) increase('brightness', 0.1);
-        if (diffY < -50) increase('brightness', -0.1);
+        if (diffY > 50) sum(getOptions().brightness, 0.1);
+        if (diffY < -50) sum(getOptions().brightness, -0.1);
     }
 }
