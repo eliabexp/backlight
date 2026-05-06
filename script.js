@@ -1,8 +1,7 @@
-import { Display } from './display.js';
-import { Hints } from './hints.js';
-
-const display = new Display();
-const hints = new Hints();
+import { display } from './display.js';
+import { hints } from './hints.js';
+import { storage } from './storage.js';
+import { setupControls } from './keybindings.js';
 
 const colorPicker = document.getElementById('select-color');
 
@@ -15,7 +14,7 @@ function setOptions(options) {
 
     const newOptions = getOptions();
 
-    localStorage.setItem('options', JSON.stringify(newOptions));
+    storage.save('options', newOptions);
 }
 
 function getOptions() {
@@ -34,23 +33,10 @@ function getOptions() {
     };
 }
 
-// Round float to 2 decimal places
-function sum(initialValue, step) {
-    return Number((initialValue + step).toFixed(2));
-}
-
-function toggleFullscreen() {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen();
-}
-
-// Events
 document.addEventListener('DOMContentLoaded', () => {
-    // Load options
-    const options = JSON.parse(localStorage.getItem('options'));
+    const options = storage.load('options');
     if (options) setOptions(options);
 
-    // Prevent screen dimming
     navigator.wakeLock
         .request('screen')
         .catch((err) =>
@@ -60,9 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
     hints.show(5000);
-});
-document.documentElement.addEventListener('mousemove', () => {
-    hints.show(3000);
+
+    setupControls();
 });
 
 colorPicker.addEventListener('input', (e) => {
@@ -70,71 +55,3 @@ colorPicker.addEventListener('input', (e) => {
 
     setOptions({ color, temperature: 1 });
 });
-
-// Triggers
-document.addEventListener('dblclick', (e) => {
-    toggleFullscreen();
-});
-
-document.addEventListener('keydown', (e) => {
-    const key = e.key;
-    const options = getOptions();
-
-    const changeValue = e.ctrlKey ? 1 : 0.1;
-
-    switch (key) {
-        case 'f':
-            toggleFullscreen();
-            break;
-
-        case 'r':
-            display.reset();
-            break;
-
-        // Brightness
-        case '=':
-        case 'ArrowUp':
-            setOptions({ brightness: sum(options.brightness, changeValue) });
-            break;
-
-        case '-':
-        case 'ArrowDown':
-            setOptions({ brightness: sum(options.brightness, -changeValue) });
-            break;
-
-        // Temperature
-        case 'ArrowRight':
-            setOptions({ temperature: sum(options.temperature, changeValue) });
-            break;
-
-        case 'ArrowLeft':
-            setOptions({ temperature: sum(options.temperature, -changeValue) });
-            break;
-    }
-});
-
-let startX, startY, endX, endY;
-
-document.addEventListener('touchstart', (e) => {
-    startX = e.changedTouches[0].screenX;
-    startY = e.changedTouches[0].screenY;
-});
-document.addEventListener('touchend', (e) => {
-    endX = e.changedTouches[0].screenX;
-    endY = e.changedTouches[0].screenY;
-    detectSwipe();
-});
-
-function detectSwipe() {
-    let diffX = endX - startX;
-    let diffY = endY - startY;
-
-    // Determine if horizontal or vertical swipe
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 50) sum(getOptions().temperature, 0.1);
-        if (diffX < -50) sum(getOptions().temperature, -0.1);
-    } else {
-        if (diffY > 50) sum(getOptions().brightness, 0.1);
-        if (diffY < -50) sum(getOptions().brightness, -0.1);
-    }
-}

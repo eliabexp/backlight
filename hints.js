@@ -1,13 +1,13 @@
-export class Hints {
-    constructor() { 
+class Hints {
+    title = document.querySelector('.title');
+    instructions = document.querySelector('.instructions');
+
+    constructor() {
         this.isAnimatingTexts = false;
         this.textAnimationTimeout = null;
     }
 
     show(duration) {
-        const title = document.querySelector('.title');
-        const instructions = document.querySelector('.instructions');
-
         const initial = (from) => ({
             opacity: 0,
             transform: `translateY(${from === 'top' ? '-60px' : '60px'})`
@@ -20,12 +20,12 @@ export class Hints {
         if (!this.isAnimatingTexts) {
             this.isAnimatingTexts = true;
 
-            title.animate([initial('top'), animate], {
+            this.title.animate([initial('top'), animate], {
                 duration: 300,
                 easing: 'ease-in-out',
                 fill: 'forwards'
             });
-            instructions.animate([initial(), animate], {
+            this.instructions.animate([initial(), animate], {
                 duration: 300,
                 easing: 'ease-in-out',
                 fill: 'forwards'
@@ -35,14 +35,14 @@ export class Hints {
         }
 
         if (!duration) return;
-        
+
         this.textAnimationTimeout = setTimeout(() => {
-            title.animate([animate, initial('top')], {
+            this.title.animate([animate, initial('top')], {
                 duration: 300,
                 easing: 'ease-in-out',
                 fill: 'forwards'
             });
-            instructions.animate([animate, initial()], {
+            this.instructions.animate([animate, initial()], {
                 duration: 300,
                 easing: 'ease-in-out',
                 fill: 'forwards'
@@ -52,3 +52,5 @@ export class Hints {
         }, duration);
     }
 }
+
+export const hints = new Hints();
