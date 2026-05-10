@@ -8,6 +8,11 @@ const translations = {
         controls:
             'Use <kbd>↑ ↓</kbd> para alterar o brilho<br>Use <kbd>← →</kbd> para alterar a temperatura',
         'change-color': 'Mudar cor'
+    },
+    es: {
+        controls:
+            'Use <kbd>↑ ↓</kbd> para cambiar el brillo<br>Use <kbd>← →</kbd> para cambiar la temperatura',
+        'change-color': 'Cambiar color'
     }
 }
 
@@ -20,7 +25,15 @@ function applyTranslations(lang) {
     })
 }
 
-const userLang = navigator.language || navigator.userLanguage
-const lang = userLang.startsWith('pt') ? 'pt' : 'en'
+function detectLang() {
+    const available = Object.keys(translations)
+    for (const locale of navigator.languages ?? [navigator.language]) {
+        if (available.includes(locale)) return locale
+        const prefix = locale.split('-')[0]
+        if (available.includes(prefix)) return prefix
+    }
 
-applyTranslations(lang)
+    return 'en'
+}
+
+applyTranslations(detectLang())
