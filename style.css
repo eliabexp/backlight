@@ -1,12 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
 
 :root {
-    --brightness: 1;
-    --duration: 500ms;
+    --duration: 150ms;
     --background-color: #fff;
     --foreground-color: rgba(28, 28, 28, 0.5);
-    --overlay-color: rgb(255, 140, 10);
-    --temperature: 0;
 }
 
 * {
@@ -22,13 +19,12 @@ html {
 body {
     background-color: #000;
     font-family: 'Inconsolata', monospace;
+    block-size: 100svh;
 }
 
 .light {
     background-color: var(--background-color);
     filter: brightness(var(--brightness));
-    height: 100vh;
-    width: 100vw;
     inset: 0;
     position: absolute;
     z-index: -10;
@@ -58,10 +54,10 @@ body {
 
 main {
     align-items: center;
+    block-size: 100svh;
     color: rgba(28, 28, 28, 0.5);
     display: flex;
     font-weight: bold;
-    height: 100vh;
     justify-content: center;
     width: 100vw;
 
@@ -74,7 +70,7 @@ main {
         text-align: center;
 
         *::selection {
-            background: transparent;
+            background-color: transparent;
             color: rgba(28, 28, 28, 0.5);
         }
     }

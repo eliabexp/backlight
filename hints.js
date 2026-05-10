@@ -1,11 +1,10 @@
 class Hints {
     title = document.querySelector('.title');
     instructions = document.querySelector('.instructions');
+    isAnimatingTexts = false;
+    textAnimationTimeout = null;
 
-    constructor() {
-        this.isAnimatingTexts = false;
-        this.textAnimationTimeout = null;
-    }
+    constructor() {}
 
     show(duration) {
         const initial = (from) => ({
@@ -37,7 +36,7 @@ class Hints {
         if (!duration) return;
 
         this.textAnimationTimeout = setTimeout(() => {
-            this.title.animate([animate, initial('top')], {
+            const titleAnim = this.title.animate([animate, initial('top')], {
                 duration: 300,
                 easing: 'ease-in-out',
                 fill: 'forwards'
@@ -48,7 +47,9 @@ class Hints {
                 fill: 'forwards'
             });
 
-            this.isAnimatingTexts = false;
+            titleAnim.onfinish = () => {
+                this.isAnimatingTexts = false;
+            };
         }, duration);
     }
 }

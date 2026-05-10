@@ -69,13 +69,13 @@ export function setupControls() {
 
         const step = 0.1;
 
-        // Determine if horizontal or vertical swipe
-        if (Math.abs(diffX) > Math.abs(diffY)) {
+        const isVerticalSwipe = Math.abs(diffY) > Math.abs(diffX);
+        if (isVerticalSwipe) {
+            if (diffY > 50) display.incrementBrightness(-step);
+            if (diffY < -50) display.incrementBrightness(step);
+        } else {
             if (diffX > 50) display.incrementTemperature(step);
             if (diffX < -50) display.incrementTemperature(-step);
-        } else {
-            if (diffY > 50) display.incrementBrightness(step);
-            if (diffY < -50) display.incrementBrightness(-step);
         }
     }
 }

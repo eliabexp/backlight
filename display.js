@@ -1,7 +1,7 @@
-import { storage } from './storage.js';
+import { Storage } from './storage.js';
 
 const defaultOptions = {
-    brightness: 1.0,
+    brightness: 1,
     color: 'rgb(255, 140, 10)',
     temperature: 0
 };
@@ -12,15 +12,16 @@ function sum(initialValue, step) {
 }
 
 class Display {
+    storage = new Storage('display');
     brightness = defaultOptions.brightness;
     temperature = defaultOptions.temperature;
     color = defaultOptions.color;
 
     constructor() {
         const savedOptions = {
-            brightness: storage.load('brightness'),
-            temperature: storage.load('temperature'),
-            color: storage.load('color')
+            brightness: this.storage.get('brightness') ?? defaultOptions.brightness,
+            temperature: this.storage.get('temperature') ?? defaultOptions.temperature,
+            color: this.storage.get('color') ?? defaultOptions.color
         };
 
         Object.assign(this, savedOptions);
@@ -37,8 +38,11 @@ class Display {
 
         this.brightness = level;
 
-        document.documentElement.style.setProperty('--brightness', this.brightness);
-        storage.save('brightness', this.brightness);
+        document.documentElement.style.setProperty(
+            '--brightness',
+            this.brightness
+        );
+        this.storage.set('brightness', this.brightness);
     }
 
     incrementBrightness(step) {
@@ -48,7 +52,10 @@ class Display {
     setColor(color) {
         if (!color) return;
 
+        this.color = color;
+
         document.documentElement.style.setProperty('--overlay-color', color);
+        this.storage.set('color', color);
     }
 
     setTemperature(level) {
@@ -58,8 +65,11 @@ class Display {
 
         this.temperature = level;
 
-        document.documentElement.style.setProperty('--temperature', this.temperature);
-        storage.save('temperature', this.temperature);
+        document.documentElement.style.setProperty(
+            '--temperature',
+            this.temperature
+        );
+        this.storage.set('temperature', this.temperature);
     }
 
     incrementTemperature(step) {
@@ -67,6 +77,8 @@ class Display {
     }
 
     reset() {
+        this.storage.clear();
+
         this.setBrightness(defaultOptions.brightness);
         this.setTemperature(defaultOptions.temperature);
         this.setColor(defaultOptions.color);

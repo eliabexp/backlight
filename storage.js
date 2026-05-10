@@ -1,36 +1,47 @@
-class Storage {
-    constructor() {
+export class Storage {
+    constructor(name) {
+        this.name = name;
         this.storage = localStorage;
     }
 
-    load(key) {
-        const value = this.storage.getItem(key);
-        if (!value) return null;
+    loadStorage() {
+        const value = this.storage.getItem(this.name);
+        if (!value) return {};
 
         try {
-            return JSON.parse(value);
+            const parsedValue = JSON.parse(value);
+            return parsedValue && typeof parsedValue === 'object'
+                ? parsedValue
+                : {};
         } catch (_) {
-            this.removeItem(key);
-            return null;
+            this.clear();
+            return {};
         }
     }
 
-    save(key, value) {
+    saveStorage(value) {
+        this.storage.setItem(this.name, JSON.stringify(value));
+    }
+
+    get(key) {
+        const value = this.loadStorage()[key];
+        return value ?? null;
+    }
+
+    set(key, value) {
         if (value == null) {
-            this.removeItem(key);
+            const storage = this.loadStorage();
+            delete storage[key];
+            this.saveStorage(storage);
             return;
         }
 
-        this.storage.setItem(key, JSON.stringify(value));
-    }
-
-    removeItem(key) {
-        this.storage.removeItem(key);
+        const storage = this.loadStorage();
+        storage[key] = value;
+        this.saveStorage(storage);
     }
 
     clear() {
-        this.storage.clear();
+        this.storage.removeItem(this.name);
     }
 }
-
-export const storage = new Storage();
